@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-tab3',
@@ -6,7 +8,13 @@ import { Component } from '@angular/core';
   styleUrls: ['tab3.page.scss']
 })
 export class Tab3Page {
-
-  constructor() {}
-
+  serverData: JSON;
+  employeeData: JSON;
+  constructor(private httpClient: HttpClient) {}
+  getAllEmployees() {
+    this.httpClient.get('http://toubib.pythonanywhere.com//employees').subscribe(data => {
+      this.employeeData = data as JSON;
+      console.log(this.employeeData);
+    });
+  }
 }
