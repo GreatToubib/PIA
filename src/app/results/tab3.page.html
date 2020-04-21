@@ -1,0 +1,20 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Display results
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div>
+    <p>Il y a un éléphant, c'est Babar ou c'est {{tab3Species}}</p>
+  </div>
+  <div>
+    <ion-button (click)="goToCamera()">
+      <ion-icon name="ellipse"></ion-icon>
+      <ion-label>take another picture </ion-label>
+    </ion-button>
+  </div>
+  <div><router-outlet></router-outlet></div>
+</ion-content>

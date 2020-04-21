@@ -4,7 +4,10 @@ dans application <> dans AndroidManifest APRES avoir build l'app !
 
 Comment débugger sur mobile? 
 
-mettre des balises debugger; dans le code typescrypt, ionic build, ionic run android, debug. Dans chrome, 
+mettre des balises debugger; dans le code typescrypt, ionic build, 
+ionic capacitor run android
+, debug.
+ Dans chrome, 
 chrome://inspect/#devices
 inspect
 
@@ -37,3 +40,6 @@ pip install Pillow
 
 Attention, mettre tous les fichiers dans le dossier Toubib, dans mysite on met que les fichiers pythons
 
+
+User variable from one component in another, pass paramater in route. 
+https://stackoverflow.com/questions/56197176/how-to-pass-parameters-through-ionic-4-tabs-buttons

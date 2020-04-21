@@ -1,4 +1,4 @@
-<ion-tabs>
+<!-- <ion-tabs>
 
   <ion-tab-bar slot="bottom">
    
@@ -15,8 +15,32 @@
 
     <ion-tab-button tab="tab3">
       <ion-icon name="square"></ion-icon>
-      <ion-label>{{imageFormat}}{{species}}</ion-label>
+      <ion-label>{{species}}</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+
+</ion-tabs> -->
+
+<ion-tabs>
+
+  <ion-tab-bar slot="bottom">
+   
+
+    <ion-tab-button tab="home">
+      <ion-icon name="ellipse"></ion-icon>
+      <ion-label>Accueil</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="camera" (click)="takePicture()" >
+      <ion-icon name="camera"></ion-icon>
+      <ion-label>camera</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="results/{{species}}">
+      <ion-icon name="square"></ion-icon>
+      <ion-label>Results</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 
 </ion-tabs>
+

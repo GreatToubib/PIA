@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Plugins, CameraResultType, CameraSource} from '@capacitor/core';
 import { DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import { HttpClient, HttpHeaders,  HttpResponse } from '@angular/common/http';
+import { Router } from "@angular/router";
 
 const { Camera } = Plugins;
 
@@ -15,10 +16,10 @@ export class TabsPage {
   imageFormat= "null";
   image64= "";
   photo: SafeResourceUrl;
-  species: "null";
+  species= "nulle";
   serverData: JSON;
 
-  constructor( private sanitizer: DomSanitizer, private httpClient: HttpClient) {}
+  constructor( private sanitizer: DomSanitizer, private httpClient: HttpClient, private router: Router) {}
 
 
   ///////////////////////////////////////////////////////////////// global fucntion, take pic then uplaod it then classify it /////////////////////////////////////////////////////////
@@ -40,10 +41,18 @@ export class TabsPage {
 
     const upload= await this.imageUpload();
     console.log(" fin upload");
-    console.log(" gonna ask for species");
-    this.getSpecies();
+
+    console.log(" gonna ask for species, right now it is ");
+    console.log(this.species);
+
+    const speciesData= await this.getSpecies();
+    this.serverData = speciesData as JSON;
+    this.species=this.serverData['species'];
+  
     console.log("species given and is");
     console.log(this.species);
+    console.log("now go to results");
+    this.router.navigate(['tabs/results',this.species]);
   }
 
   ///////////////////////////////////////////////////////////////// upload picture /////////////////////////////////////////////////////////
@@ -71,11 +80,33 @@ export class TabsPage {
 
   ///////////////////////////////////////////////////////////////// classify picture /////////////////////////////////////////////////////////
   
+  // getSpecies() {
+  //   // debugger;
+  //   // this.httpClient.get('http://toubib.pythonanywhere.com/getSpecies?name={this.imageName}', 
+  //   console.log("  in getspecies function");
+  //   return this.httpClient.get('http://toubib.pythonanywhere.com/getSpecies', 
+  //   {
+  //     headers:
+  //       new HttpHeaders(
+  //         {
+  //           'Content-Type': 'application/json'
+  //         }
+  //       )
+  //   }
+  //   ).subscribe(data => {
+  //     // debugger;
+  //     this.serverData = data as JSON;
+  //     this.species=this.serverData['species'];
+  //     console.log(this.serverData);
+  //     console.log(this.species);
+  //   });
+  // }
+
   getSpecies() {
     // debugger;
     // this.httpClient.get('http://toubib.pythonanywhere.com/getSpecies?name={this.imageName}', 
     console.log("  in getspecies function");
-    this.httpClient.get('http://toubib.pythonanywhere.com/getSpecies', 
+    return this.httpClient.get('http://toubib.pythonanywhere.com/getSpecies', 
     {
       headers:
         new HttpHeaders(
@@ -84,14 +115,14 @@ export class TabsPage {
           }
         )
     }
-    ).subscribe(data => {
-      // debugger;
-      this.serverData = data as JSON;
-      this.species=this.serverData['species'];
-      console.log(this.serverData);
-      console.log(this.species);
-    });
+    ).toPromise();
   }
+
+ 
+
+  speciesValue() {
+    return this.species;
+}
 
 }
 
