@@ -45,7 +45,7 @@ export class Tab1Page {
             "test": this.test
     }
 
-    this.httpClient.post("http://toubib.pythonanywhere.com/customers", postData)
+    this.httpClient.post("http://toubib.pythonanywhere.com/updateData", postData)
     // http://127.0.0.1:5002/
     // http://toubib.pythonanywhere.com/
       .subscribe(data => {

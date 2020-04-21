@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request
 from flask_cors import CORS, cross_origin
 from flask_restful import Resource, Api
@@ -7,14 +8,16 @@ import sys
 import base64
 from PIL import Image
 from io import BytesIO
+import face_detect_cv3
 
-PORT=5002
+# PORT=5002
 
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
+print("server is starting", file=sys.stderr)
 
-
+# ###############################################################################################   before first request, JSON data storage #################################################
 @app.before_first_request
 def before_first_request_func():
     print("This function will run once", file=sys.stderr)
@@ -27,6 +30,64 @@ def before_first_request_func():
     with open('data.txt', 'w+') as outfile:
         json.dump(data, outfile)
 
+# ###############################################################################################   upload image #################################################
+@app.route("/imageUpload", methods=["GET", "POST"])
+def imageUpload():
+    if request.method == 'POST':
+        """modify/update the information for <user_id>"""
+        print('imageUpload Post', file=sys.stderr)
+        dataPOST = request.get_json()
+        data = {}
+        data['images'] = []
+        data['images'].append({
+            'name': dataPOST['name'],
+            'format': dataPOST['format'],
+            'base64': dataPOST['base64']
+
+        })
+
+
+        # filename = data['images'][0]['name']+'.'+data['images'][0]['format']
+        filename = data['images'][0]['name']+'.png'
+        im = Image.open(BytesIO(base64.b64decode(data['images'][0]['base64'])))
+        im.save(filename, data['images'][0]['format'])
+
+        filename= 'lastImgData.txt'
+        with open(filename , 'w+') as outfile:
+            json.dump(data, outfile)
+
+        return dataPOST
+
+    if request.method == 'GET':
+
+        return jsonify({'text':"customers Get method"})
+
+
+# ###############################################################################################  get Species, call IA model #################################################
+@app.route("/getSpecies", methods=["GET", "POST"])
+def getSpecies():
+    if request.method == 'GET':
+        print('get Species GET', file=sys.stderr)
+        with open('lastImgData.txt') as json_file:
+            data = json.load(json_file)
+            filename= data['images'][0]['name']+'.png'
+
+        # filename="abba.png"
+        species=face_detect_cv3.countfaces(filename)+" faces "
+        print('nbr de faces: '+species, file=sys.stderr)
+        return jsonify({'species':species})
+
+
+
+# ###############################################################################################  renvoyer vers index.html #################################################
+@app.route("/", methods=["GET","POST"])
+def home():
+    if request.method=="GET":
+        return render_template("index.html")
+
+
+
+# ###############################################################################################   hello1, test de GET #################################################
 
 @app.route("/hello1", methods=["GET"])
 def hello1():
@@ -38,8 +99,8 @@ def hello1():
         return jsonify({'text':test})
 
 
-
-@app.route("/customers", methods=["GET", "POST"])
+# ###############################################################################################  updata Data for test post #################################################
+@app.route("/updateData", methods=["GET", "POST"])
 def customers():
     if request.method == 'POST':
         """modify/update the information for <user_id>"""
@@ -59,65 +120,8 @@ def customers():
 
         return jsonify({'text':"customers Get method"})
 
-
-@app.route("/imageUpload", methods=["GET", "POST"])
-def imageUpload():
-    if request.method == 'POST':
-        """modify/update the information for <user_id>"""
-        print('imageUpload Post', file=sys.stderr)
-        dataPOST = request.get_json()
-        data = {}
-        data['images'] = []
-        data['images'].append({
-            'name': dataPOST['name'],
-            'format': dataPOST['format'],
-            'base64': dataPOST['base64']
-
-        })
-
-
-        filename = "image."+ data['images'][0]['format']
-        im = Image.open(BytesIO(base64.b64decode(data['images'][0]['base64'])))
-        im.save(filename, data['images'][0]['format'])
-
-
-
-        # # filename = data['images'][0]['name']  # new img everytime
-        # filename = "image."+ data['images'][0]['format']  # same file everytime and overwrite
-        # with open(filename, 'w+') as f:
-        #     f.write(imgdata)
-
-
-        with open('imagee.txt', 'w+') as outfile:
-            json.dump(data, outfile)
-
-        return dataPOST
-
-    if request.method == 'GET':
-
-        return jsonify({'text':"customers Get method"})
-
-
-@app.route("/", methods=["GET","POST"])
-def home():
-    if request.method=="GET":
-        return render_template("index.html")
-
-class Employees(Resource):
-    def get(self):
-        return {'employees': [{'id':1, 'name':'Balram'},{'id':2, 'name':'Tom'}]}
-
-class Employees_Name(Resource):
-    def get(self, employee_id):
-        print('Employee id:' + employee_id)
-        result = {'data': {'id':1, 'name':'Balram'}}
-        return jsonify(result)
-
-
-api.add_resource(Employees, '/employees') # Route_1
-api.add_resource(Employees_Name, '/employees/<employee_id>') # Route_3
-
 if __name__ == '__main__':
    app.run(port=PORT)
+   
 
 
